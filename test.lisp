@@ -8,7 +8,9 @@
 
 (defun foo () (format t "foo:foo!~%"))
 
-(defparameter bar::*piyo* (hoge:+ bar::*foo* bar::*bar*))
+(defparameter cl-user::*foo* 1)
+
+(defparameter bar::*piyo* (hoge:* bar::*foo* 2))
 
 
 (in-package #:cl)
