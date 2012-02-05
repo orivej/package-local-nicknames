@@ -1,5 +1,6 @@
 (defsystem :package-local-nicknames
   :serial t
   :components ((:file "package")
-               (:file "sbcl")
+               #+sbcl(:file "sbcl")
+               #+ccl(:file "ccl")
                (:file "package-local-nicknames")))
