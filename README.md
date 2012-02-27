@@ -1,11 +1,59 @@
-## Package Local Nicknames
+Package Local Nicknames
+=======================
+
+Usage
+-----
+
+### Example
+
+….asd:
+
+    (asdf:defsystem …
+      :depends-on (package-local-nicknames iterate cl-containers …)
+      …)
+
+package.lisp:
+
+    (defpackage …
+      (:use #:cl #:iterate …)
+      (:local-nicknames (#:c #:containers)))
+
+….lisp
+
+    (defun … ()
+      (let ((… (c:make-container 'c:set-container)))
+        …))
+
+### Integration with SLIME completion
+
+Provides symbol and local nicknames completion.
+
+.emacs:
+
+    (defun my-slime-connected-hook ()
+      (slime-load-file "~/.emacs.d/slime-connected.lisp"))
+
+    (add-hook 'slime-connected-hook 'my-slime-connected-hook)
+
+~/.emacs.d/slime-connected.lisp:
+
+    (in-package :swank)
+
+    (defvar *original-completions* (fdefinition 'completions))
+
+    (defun completions (string default-package-name)
+      (let ((*package* (guess-package default-package-name)))
+        (funcall *original-completions* string default-package-name)))
+
+Original README by 3b
+---------------------
 
 still in the design stage, you probably don't want to use the code...
 
 (it sort of works on sbcl, but is nowhere near complete, expect it to
 break things unpredictably)
 
-## rationale
+### rationale
 
 `cl-opengl` wants the nickname "GL". `CLX/GLX` wants the nickname
 "GL".  A hypothetical Parenscript/WebGL wants the nickname "GL". It is
