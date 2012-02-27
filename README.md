@@ -45,8 +45,8 @@ Provides symbol and local nicknames completion.
       (let ((*package* (guess-package default-package-name)))
         (funcall *original-completions* string default-package-name)))
 
-Original README by 3b
----------------------
+Original README by Bart Botta (3b)
+----------------------------------
 
 still in the design stage, you probably don't want to use the code...
 

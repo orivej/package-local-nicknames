@@ -62,9 +62,10 @@
                                (when (find-restart 'ccl::never-complain)
                                  (continue c)))))
   (defun %find-pkg (name &optional (len (length name)))
+    (declare (ignorable len))
     (or (and (boundp '*package*)
              (find-package-using-package name *package*))
-        (find-global-package name len)))
+        (find-global-package name)))
 
   (defmacro defpackage (name &rest options)
     "Defines a new package called PACKAGE. Each of OPTIONS should be one of the 
