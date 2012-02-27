@@ -48,32 +48,6 @@
                                 implement lock doc-string)
               (set-package-local-nicknames package local-nicknames)))))))
 
-(defun find-global-package (package-designator)
-  (flet ((find-package-from-string (string)
-           (declare (type string string))
-           (let ((packageoid (gethash string *package-names*)))
-             (when (and (null packageoid)
-                        (not *in-package-init*) ; KLUDGE
-                        (let ((mismatch (mismatch "SB!" string)))
-                          (and mismatch (= mismatch 3))))
-               (restart-case
-                   (signal 'bootstrap-package-not-found :name string)
-                 (debootstrap-package ()
-                   (return-from find-global-package
-                     (if (string= string "SB!XC")
-                         (find-global-package "COMMON-LISP")
-                         (find-global-package
-                          (substitute #\- #\! string :count 1)))))))
-             packageoid)))
-    (typecase package-designator
-      (package package-designator)
-      (symbol (find-package-from-string (symbol-name package-designator)))
-      (string (find-package-from-string package-designator))
-      (character (find-package-from-string (string package-designator)))
-      (t (error 'type-error
-                :datum package-designator
-                :expected-type '(or character package string symbol))))))
-
 ;;; trying to redefine find-package tends to break things, so define it
 ;;; with another name and (setf fdefinition) later
 (defun find-package-pln (package-designator)

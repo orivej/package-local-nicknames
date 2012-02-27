@@ -2,20 +2,6 @@
 
 (use-package '#:package-local-nicknames)
 
-(defun find-global-package (name &optional (len (length name)))
-  (declare (fixnum len))
-  (with-package-list-read-lock
-      (dolist (p %all-packages%)
-        (if (dolist (pkgname (pkg.names p))
-              (when (and (= (the fixnum (length pkgname)) len)
-                         (dotimes (i len t)
-                           ;; Aref: allow non-simple strings
-                           (unless (eq (aref name i) (schar pkgname i))
-                             (return))))
-                (return t)))
-          (return p)))))
-
-
 (defun %define-package-pln (name size 
                              external-size ; extension (may be nil.)
                              nicknames

@@ -2,10 +2,15 @@
 
 (in-package #:package-local-nicknames)
 
+(setf (symbol-function 'find-global-package)
+      (symbol-function 'cl:find-package))
+(setf (symbol-function 'global-package-nicknames)
+      (symbol-function 'cl:package-nicknames))
+
 ;;; since we can't modify the PACKAGE struct, we store the aliases externally
 ;;; in a weak key hash table from package objects ->
 ;;;  hash of nickname -> real-name
-(defparameter *packages-with-local-nicknames*
+(defvar *packages-with-local-nicknames*
   #+sbcl
   (make-hash-table :weakness :key :test 'eq)
   #+ccl
@@ -47,3 +52,14 @@
     ;; in case we didn't signal an error
     (values real-package (and real-name t))))
 
+(defun package-nicknames-using-package (name local)
+  (let* ((name (find-package name))
+         (local (find-package local))
+         (local-nicknames (gethash local *packages-with-local-nicknames*))
+         (nicknames (global-package-nicknames name)))
+    (when local-nicknames
+      (maphash (lambda (k v)
+                 (when (eq (find-package v) name)
+                   (push k nicknames)))
+               local-nicknames))
+    nicknames))
