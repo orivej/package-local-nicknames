@@ -1,6 +1,7 @@
 (in-package #:sb-impl)
 
-(use-package '#:package-local-nicknames)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (use-package '#:package-local-nicknames))
 
 ;;; can't redefine %defpackage, since existing defpackage forms would
 ;;; have already expanded to calls with the original signature

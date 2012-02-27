@@ -1,6 +1,7 @@
 (in-package #:ccl)
 
-(use-package '#:package-local-nicknames)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (use-package '#:package-local-nicknames))
 
 (defun %define-package-pln (name size 
                              external-size ; extension (may be nil.)
