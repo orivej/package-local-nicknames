@@ -5,10 +5,10 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defvar *global-alias* nil)
   (unless *global-alias*
-    (setf (symbol-function 'find-global-package)
-          (symbol-function 'find-package))
-    (setf (symbol-function 'global-package-nicknames)
-          (symbol-function 'package-nicknames))
+    (setf (fdefinition 'find-global-package)
+          (fdefinition 'find-package))
+    (setf (fdefinition 'global-package-nicknames)
+          (fdefinition 'package-nicknames))
     (setf *global-alias* t)))
 
 ;;; since we can't modify the PACKAGE struct, we store the aliases externally

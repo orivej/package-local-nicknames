@@ -56,6 +56,10 @@
            (find-package-using-package package-designator *package*))
       (find-global-package package-designator)))
 
+(defun package-nicknames-pln (package-designator)
+  (or (and (boundp '*package*)
+           (package-nicknames-using-package package-designator *package*))
+      (global-package-nicknames package-designator)))
 
 (without-package-locks
   (defmacro defpackage (package &rest options)
@@ -197,7 +201,9 @@
                           (sb-c:source-location)))))))
 
 (without-package-locks
- (setf (fdefinition 'find-package)
-       #'find-package-pln))
+  (setf (fdefinition 'find-package)
+        #'find-package-pln)
+  (setf (fdefinition 'package-nicknames)
+        #'package-nicknames-pln))
 
 (push :package-local-nicknames *features*)
