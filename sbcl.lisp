@@ -1,31 +1,6 @@
-;;(in-package :package-local-nicknames)
+(in-package #:sb-impl)
 
-#-sbcl (error "sbcl only for now...")
-
-(in-package :sb-impl)
-
-
-;;; since we can't modify the PACKAGE struct, we store the aliases externally
-;;; in a weak key hash table from package objects ->
-;;;  hash of nickname -> real-name
-(defparameter *packages-with-local-nicknames*
-  (make-hash-table :weakness :key))
-
-(defun package-local-nicknames (package-designator)
-  (let* ((package (find-package package-designator))
-         (local-nicknames (gethash package *packages-with-local-nicknames*))
-         (list nil))
-    (when local-nicknames
-      (maphash (lambda (k v) (push (list k v) list)) local-nicknames))
-    list))
-
-(defun set-package-local-nicknames (package-designator nicknames)
-  (let* ((package (find-package package-designator))
-         (ht (make-hash-table :test 'equal)))
-    (assert package nil "no package for designator ~s in set-package-local-nicknames" package-designator)
-    (loop for (n rn) in nicknames
-       do (setf (gethash n ht) rn))
-    (setf (gethash package *packages-with-local-nicknames*) ht)))
+(use-package '#:package-local-nicknames)
 
 ;;; can't redefine %defpackage, since existing defpackage forms would
 ;;; have already expanded to calls with the original signature
@@ -98,26 +73,6 @@
       (t (error 'type-error
                 :datum package-designator
                 :expected-type '(or character package string symbol))))))
-
-;; todo: real API for this...
-(defun find-package-using-package (name package-designator &key (errorp t))
-  (when (packagep name)
-    (return-from find-package-using-package name))
-  (check-type name (or symbol string character) "package-designator")
-  (let* ((package (if (packagep package-designator)
-                      package-designator
-                      (find-package package-designator)))
-         (local-nicknames (gethash package *packages-with-local-nicknames*))
-         (real-name (when local-nicknames (gethash (string name)
-                                                   local-nicknames)))
-         (real-package (when real-name (find-global-package real-name))))
-    ;; should not finding a package be an error?
-    (when (and real-name (not real-package) errorp)
-      ;; todo: real error
-      (error "package nickname ~s in package ~s points to non-existant package ~s" name (package-name package) real-name))
-    ;; return t/nil in 2nd value to indicate whether a nickname was defined
-    ;; in case we didn't signal an error
-    (values real-package (and real-name t))))
 
 ;;; trying to redefine find-package tends to break things, so define it
 ;;; with another name and (setf fdefinition) later
