@@ -2,10 +2,14 @@
 
 (in-package #:package-local-nicknames)
 
-(setf (symbol-function 'find-global-package)
-      (symbol-function 'cl:find-package))
-(setf (symbol-function 'global-package-nicknames)
-      (symbol-function 'cl:package-nicknames))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defvar *global-alias* nil)
+  (unless *global-alias*
+    (setf (symbol-function 'find-global-package)
+          (symbol-function 'find-package))
+    (setf (symbol-function 'global-package-nicknames)
+          (symbol-function 'package-nicknames))
+    (setf *global-alias* t)))
 
 ;;; since we can't modify the PACKAGE struct, we store the aliases externally
 ;;; in a weak key hash table from package objects ->
